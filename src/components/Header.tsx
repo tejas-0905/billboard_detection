@@ -1,5 +1,5 @@
-import React from 'react';
-import { Camera, Home, BarChart3, User, Shield, Sun, Moon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Camera, Home, BarChart3, User, Shield, Sun, Moon, Menu, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -11,6 +11,33 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const navButton = (
+    label: string,
+    icon: React.ReactNode,
+    tab: 'home' | 'detect' | 'dashboard' | 'profile' | 'admin',
+    activeColor: string
+  ) => (
+    <button
+      onClick={() => {
+        setActiveTab(tab);
+        setMenuOpen(false); // close menu on mobile
+      }}
+      className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors w-full sm:w-auto ${
+        activeTab === tab
+          ? theme === 'dark'
+            ? `${activeColor} text-white`
+            : `${activeColor} text-white`
+          : theme === 'dark'
+          ? 'text-gray-400 hover:text-white'
+          : 'text-gray-600 hover:text-gray-900'
+      }`}
+    >
+      {icon}
+      <span className="text-xs font-medium">{label}</span>
+    </button>
+  );
 
   return (
     <header
@@ -21,9 +48,8 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
       }`}
     >
       <div className="px-4 py-3">
-        {/* Top bar with logo, nav, and theme toggle all in one row */}
         <div className="flex items-center justify-between w-full">
-          {/* Logo Section */}
+          {/* Logo */}
           <div className="flex items-center space-x-2">
             <div
               className={`p-2 rounded-full ${
@@ -44,107 +70,48 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex items-center gap-x-6">
-            <button
-              onClick={() => setActiveTab('home')}
-              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'home'
-                  ? theme === 'dark'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-blue-500 text-white'
-                  : theme === 'dark'
-                  ? 'text-gray-400 hover:text-white'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Home className="w-5 h-5" />
-              <span className="text-xs font-medium">Home</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('detect')}
-              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'detect'
-                  ? theme === 'dark'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-orange-500 text-white'
-                  : theme === 'dark'
-                  ? 'text-gray-400 hover:text-white'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Camera className="w-5 h-5" />
-              <span className="text-xs font-medium">Detect</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'dashboard'
-                  ? theme === 'dark'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-green-500 text-white'
-                  : theme === 'dark'
-                  ? 'text-gray-400 hover:text-white'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <BarChart3 className="w-5 h-5" />
-              <span className="text-xs font-medium">Dashboard</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('profile')}
-              className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                activeTab === 'profile'
-                  ? theme === 'dark'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-purple-500 text-white'
-                  : theme === 'dark'
-                  ? 'text-gray-400 hover:text-white'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <User className="w-5 h-5" />
-              <span className="text-xs font-medium">Profile</span>
-            </button>
-
-            {user?.role === 'admin' && (
-              <button
-                onClick={() => setActiveTab('admin')}
-                className={`flex flex-col items-center space-y-1 px-3 py-2 rounded-lg transition-colors ${
-                  activeTab === 'admin'
-                    ? theme === 'dark'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-red-500 text-white'
-                    : theme === 'dark'
-                    ? 'text-gray-400 hover:text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Shield className="w-5 h-5" />
-                <span className="text-xs font-medium">Admin</span>
-              </button>
-            )}
+          {/* Desktop Nav */}
+          <nav className="hidden sm:flex items-center gap-x-6">
+            {navButton('Home', <Home className="w-5 h-5" />, 'home', 'bg-blue-500')}
+            {navButton('Detect', <Camera className="w-5 h-5" />, 'detect', 'bg-orange-500')}
+            {navButton('Dashboard', <BarChart3 className="w-5 h-5" />, 'dashboard', 'bg-green-500')}
+            {navButton('Profile', <User className="w-5 h-5" />, 'profile', 'bg-purple-500')}
+            {user?.role === 'admin' &&
+              navButton('Admin', <Shield className="w-5 h-5" />, 'admin', 'bg-red-500')}
           </nav>
 
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className={`p-2 rounded-full transition-colors flex items-center justify-center ${
-              theme === 'dark'
-                ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-            }`}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-5 h-5" />
-            ) : (
-              <Moon className="w-5 h-5" />
-            )}
-          </button>
+          {/* Theme Toggle & Hamburger */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-full transition-colors flex items-center justify-center ${
+                theme === 'dark'
+                  ? 'bg-gray-800 hover:bg-gray-700 text-yellow-400'
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              }`}
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="sm:hidden p-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Dropdown */}
+        {menuOpen && (
+          <div className="sm:hidden mt-3 flex flex-col gap-2">
+            {navButton('Home', <Home className="w-5 h-5" />, 'home', 'bg-blue-500')}
+            {navButton('Detect', <Camera className="w-5 h-5" />, 'detect', 'bg-orange-500')}
+            {navButton('Dashboard', <BarChart3 className="w-5 h-5" />, 'dashboard', 'bg-green-500')}
+            {navButton('Profile', <User className="w-5 h-5" />, 'profile', 'bg-purple-500')}
+            {user?.role === 'admin' &&
+              navButton('Admin', <Shield className="w-5 h-5" />, 'admin', 'bg-red-500')}
+          </div>
+        )}
       </div>
     </header>
   );
