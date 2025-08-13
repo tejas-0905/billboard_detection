@@ -51,7 +51,7 @@ const Detection: React.FC = () => {
           'Missing QR code with permit details',
           'Located within 100m of traffic junction'
         ],
-        confidence: 92,
+        confidence: 72,
         billboardSize: { width: 12, height: 8 },
         isAuthorized: false
       };

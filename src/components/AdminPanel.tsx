@@ -29,7 +29,7 @@ const AdminPanel: React.FC = () => {
       timestamp: '2024-01-15T10:30:00Z',
       reporter: 'citizen@example.com',
       violations: ['Size exceeds 40 sq ft limit', 'Missing QR code'],
-      confidence: 92,
+      confidence: 72,
       status: 'pending'
     },
     {
