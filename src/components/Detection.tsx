@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Camera, Upload, MapPin, Clock, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocation } from '../contexts/LocationContext';
+import CameraDetection from './CameraDetection';
 
 interface DetectionResult {
   violations: string[];
@@ -11,6 +12,8 @@ interface DetectionResult {
   permitNumber?: string;
 }
 
+type Mode = 'upload' | 'live';
+
 const Detection: React.FC = () => {
   const { theme } = useTheme();
   const { location } = useLocation();
@@ -18,46 +21,11 @@ const Detection: React.FC = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [mode, setMode] = useState<Mode>('upload');
+  const [capturedFrame, setCapturedFrame] = useState<string | null>(null);
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } 
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setIsCameraActive(true);
-      }
-    } catch (error) {
-      alert('Camera access denied or not available');
-    }
-  };
-
-  const captureImage = () => {
-    if (videoRef.current) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        const imageData = canvas.toDataURL('image/jpeg');
-        setSelectedImage(imageData);
-        stopCamera();
-        analyzeImage();
-      }
-    }
-  };
-
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-      tracks.forEach(track => track.stop());
-      setIsCameraActive(false);
-    }
-  };
+  // For CameraDetection
+  const cameraRef = useRef<any>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -92,6 +60,26 @@ const Detection: React.FC = () => {
     }, 3000);
   };
 
+  // Capture current frame from CameraDetection
+  const handleCaptureFrame = useCallback(() => {
+    if (cameraRef.current) {
+      const video = cameraRef.current.video;
+      if (video) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = canvas.toDataURL('image/jpeg');
+          setCapturedFrame(imageData);
+          setSelectedImage(imageData);
+          analyzeImage();
+        }
+      }
+    }
+  }, [cameraRef]);
+
   const submitReport = () => {
     const reportData = {
       image: selectedImage,
@@ -108,6 +96,7 @@ const Detection: React.FC = () => {
     alert('Report submitted successfully! You earned 10 points.');
     setSelectedImage(null);
     setDetectionResult(null);
+    setCapturedFrame(null);
   };
 
   return (
@@ -115,16 +104,37 @@ const Detection: React.FC = () => {
       <div className="max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Billboard Detection</h2>
 
-        {!selectedImage && !isCameraActive && (
-          <div className="space-y-4">
-            <button
-              onClick={startCamera}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-colors"
-            >
-              <Camera className="w-6 h-6" />
-              <span>Use Camera</span>
-            </button>
+        {/* Mode Switch */}
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setMode('upload')}
+            className={`px-4 py-2 rounded-l-xl font-semibold border transition-colors ${
+              mode === 'upload'
+                ? 'bg-blue-500 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 border-gray-700'
+                  : 'bg-gray-100 text-gray-700 border-gray-300'
+            }`}
+          >
+            Upload
+          </button>
+          <button
+            onClick={() => setMode('live')}
+            className={`px-4 py-2 rounded-r-xl font-semibold border transition-colors ${
+              mode === 'live'
+                ? 'bg-blue-500 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 border-gray-700'
+                  : 'bg-gray-100 text-gray-700 border-gray-300'
+            }`}
+          >
+            Live Camera
+          </button>
+        </div>
 
+        {/* Upload Mode */}
+        {mode === 'upload' && !selectedImage && (
+          <div className="space-y-4">
             <button
               onClick={() => fileInputRef.current?.click()}
               className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 border-2 border-dashed transition-colors ${
@@ -136,7 +146,6 @@ const Detection: React.FC = () => {
               <Upload className="w-6 h-6" />
               <span>Upload Image</span>
             </button>
-
             <input
               ref={fileInputRef}
               type="file"
@@ -147,35 +156,33 @@ const Detection: React.FC = () => {
           </div>
         )}
 
-        {isCameraActive && (
+        {/* Live Camera Mode */}
+        {mode === 'live' && (
           <div className="space-y-4">
             <div className="relative rounded-xl overflow-hidden">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="w-full h-64 object-cover"
-              />
-              <div className="absolute inset-0 flex items-end justify-center pb-4">
-                <div className="flex space-x-4">
-                  <button
-                    onClick={captureImage}
-                    className="bg-white text-gray-900 p-4 rounded-full shadow-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <Camera className="w-6 h-6" />
-                  </button>
-                  <button
-                    onClick={stopCamera}
-                    className="bg-red-500 text-white p-4 rounded-full shadow-lg hover:bg-red-600 transition-colors"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
-              </div>
+              <CameraDetection ref={cameraRef} />
+              <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none" />
             </div>
+            <button
+              onClick={handleCaptureFrame}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-colors"
+            >
+              <Camera className="w-6 h-6" />
+              <span>Capture & Analyze</span>
+            </button>
+            {capturedFrame && (
+              <div className="mt-4">
+                <img
+                  src={capturedFrame}
+                  alt="Captured frame"
+                  className="w-full h-64 object-cover rounded-xl"
+                />
+              </div>
+            )}
           </div>
         )}
 
+        {/* Show selected image and analysis */}
         {selectedImage && (
           <div className="space-y-4">
             <div className="relative">
@@ -186,7 +193,10 @@ const Detection: React.FC = () => {
               />
               {!isAnalyzing && !detectionResult && (
                 <button
-                  onClick={() => setSelectedImage(null)}
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setCapturedFrame(null);
+                  }}
                   className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -275,6 +285,7 @@ const Detection: React.FC = () => {
                     onClick={() => {
                       setSelectedImage(null);
                       setDetectionResult(null);
+                      setCapturedFrame(null);
                     }}
                     className={`px-6 py-3 rounded-xl font-semibold border transition-colors ${
                       theme === 'dark'
