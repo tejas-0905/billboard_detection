@@ -26,8 +26,8 @@ const AuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400">
-      <div className="bg-white/90 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-blue-100">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 via-indigo-400 to-purple-400 px-2">
+      <div className="bg-white/90 p-4 sm:p-8 rounded-2xl shadow-2xl w-full max-w-md border border-blue-100">
         <div className="flex flex-col items-center mb-6">
           <div className="bg-blue-500 rounded-full p-3 shadow-lg mb-2">
             {/* Shield SVG logo */}
@@ -44,7 +44,7 @@ const AuthScreen: React.FC = () => {
           <h1 className="text-3xl font-extrabold text-blue-700 mb-1 tracking-tight">
             BillboardGuard
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 text-center">
             {mode === "login" ? "Sign in to your account" : "Create a new account"}
           </p>
         </div>
@@ -117,7 +117,7 @@ const AuthScreen: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="mt-8 text-white text-xs opacity-70">
+      <div className="mt-8 text-white text-xs opacity-70 text-center">
         &copy; {new Date().getFullYear()} BillboardGuard. All rights reserved.
       </div>
     </div>
