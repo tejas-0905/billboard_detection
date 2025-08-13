@@ -9,7 +9,6 @@ import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
 import AdminPanel from './components/AdminPanel';
 import PrivacyNotice from './components/PrivacyNotice';
-import CameraDetection from './components/CameraDetection'; // NEW: live camera component
 
 type Tab = 'home' | 'detect' | 'dashboard' | 'profile' | 'admin';
 type DetectionMode = 'upload' | 'camera';
@@ -17,11 +16,10 @@ type DetectionMode = 'upload' | 'camera';
 function AppContent() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
-  const [detectionMode, setDetectionMode] = useState<DetectionMode>('upload'); // NEW
+  const [detectionMode, setDetectionMode] = useState<DetectionMode>('upload');
   const { theme } = useTheme();
 
   useEffect(() => {
-    // Check if user has accepted privacy notice
     const hasAcceptedPrivacy = localStorage.getItem('billboard-app-privacy-accepted');
     if (!hasAcceptedPrivacy) {
       setShowPrivacyNotice(true);
@@ -33,7 +31,6 @@ function AppContent() {
     setShowPrivacyNotice(false);
   };
 
-  // Small helper: when user starts detection from Hero, drop into Detect tab (defaults to last-used mode)
   const handleStartDetection = (mode?: DetectionMode) => {
     if (mode) setDetectionMode(mode);
     setActiveTab('detect');
@@ -93,17 +90,22 @@ function AppContent() {
                   </button>
                 </div>
 
-                {/* Quick tips / permissions hint */}
                 {detectionMode === 'camera' && (
                   <span className="ml-auto text-xs sm:text-sm opacity-70">
-                    Grant camera permission • Best in Chrome/Edge • Uses device back camera on mobile
+                    (Live camera mode currently unavailable)
                   </span>
                 )}
               </div>
             </div>
 
             {/* Render the selected detection experience */}
-            {detectionMode === 'upload' ? <Detection /> : <CameraDetection />}
+            {detectionMode === 'upload' ? (
+              <Detection />
+            ) : (
+              <div className="text-center py-10 opacity-70">
+                Live camera detection feature is not available right now.
+              </div>
+            )}
           </div>
         )}
 
@@ -113,7 +115,10 @@ function AppContent() {
       </main>
 
       {showPrivacyNotice && (
-        <PrivacyNotice onAccept={handlePrivacyAccept} onDecline={() => setShowPrivacyNotice(false)} />
+        <PrivacyNotice
+          onAccept={handlePrivacyAccept}
+          onDecline={() => setShowPrivacyNotice(false)}
+        />
       )}
     </div>
   );
