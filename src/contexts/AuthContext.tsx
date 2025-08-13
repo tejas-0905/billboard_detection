@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
   id: string;
@@ -28,52 +28,62 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
-    // Demo user for prototype
-    return {
-      id: '1',
-      name: 'Demo User',
-      email: 'demo@billboard.app',
-      role: 'citizen',
-      points: 150,
-      reportsSubmitted: 12
-    };
+    // Try to load user from localStorage
+    const stored = localStorage.getItem('billboard-user');
+    return stored ? JSON.parse(stored) : null;
   });
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('billboard-user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('billboard-user');
+    }
+  }, [user]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // Simulate login
     if (email === 'admin@billboard.app') {
-      setUser({
+      const adminUser: User = {
         id: '2',
         name: 'Admin User',
         email: 'admin@billboard.app',
         role: 'admin',
         points: 0,
         reportsSubmitted: 0
-      });
-    } else {
-      setUser({
+      };
+      setUser(adminUser);
+      return true;
+    } else if (email && password) {
+      const demoUser: User = {
         id: '1',
         name: 'Demo User',
-        email: email,
+        email,
         role: 'citizen',
         points: 150,
         reportsSubmitted: 12
-      });
+      };
+      setUser(demoUser);
+      return true;
     }
-    return true;
+    return false;
   };
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     // Simulate registration
-    setUser({
-      id: Math.random().toString(36).substr(2, 9),
-      name,
-      email,
-      role: 'citizen',
-      points: 0,
-      reportsSubmitted: 0
-    });
-    return true;
+    if (name && email && password) {
+      const newUser: User = {
+        id: Math.random().toString(36).substr(2, 9),
+        name,
+        email,
+        role: 'citizen',
+        points: 0,
+        reportsSubmitted: 0
+      };
+      setUser(newUser);
+      return true;
+    }
+    return false;
   };
 
   const logout = () => {
