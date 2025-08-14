@@ -14,14 +14,14 @@ const AuthScreen: React.FC = () => {
     setError(null);
     if (mode === "login") {
       const success = await login(email, password);
-      if (!success) setError("Invalid credentials");
+      if (!success) setError("You have not signed up");
     } else {
       if (!name) {
         setError("Name is required");
         return;
       }
       const success = await register(name, email, password);
-      if (!success) setError("Registration failed");
+      if (!success) setError("Registration failed (email already registered)");
     }
   };
 
@@ -98,7 +98,10 @@ const AuthScreen: React.FC = () => {
               <button
                 className="text-indigo-600 font-semibold underline hover:text-indigo-800 transition"
                 type="button"
-                onClick={() => setMode("signup")}
+                onClick={() => {
+                  setMode("signup");
+                  setError(null);
+                }}
               >
                 Sign Up
               </button>
@@ -109,7 +112,10 @@ const AuthScreen: React.FC = () => {
               <button
                 className="text-indigo-600 font-semibold underline hover:text-indigo-800 transition"
                 type="button"
-                onClick={() => setMode("login")}
+                onClick={() => {
+                  setMode("login");
+                  setError(null);
+                }}
               >
                 Sign In
               </button>
