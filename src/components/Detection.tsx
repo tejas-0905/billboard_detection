@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { Camera, Upload, MapPin, Clock, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocation } from '../contexts/LocationContext';
+import { useAuth } from '../contexts/AuthContext';
 import CameraDetection from './CameraDetection';
 
 interface DetectionResult {
@@ -14,9 +15,31 @@ interface DetectionResult {
 
 type Mode = 'upload' | 'live';
 
+const VIOLATION_POOL = [
+  'Billboard size exceeds 40 sq ft limit',
+  'Missing QR code with permit details',
+  'Located within 100m of traffic junction',
+  'Unauthorized content displayed',
+  'Billboard not registered with authority',
+  'Obstructing traffic sign visibility'
+];
+
+function getRandomViolations() {
+  // Randomly select 0-3 violations
+  const count = Math.floor(Math.random() * 4);
+  const shuffled = [...VIOLATION_POOL].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+function getRandomConfidence() {
+  // Random confidence between 60 and 99
+  return Math.floor(Math.random() * 40) + 60;
+}
+
 const Detection: React.FC = () => {
   const { theme } = useTheme();
   const { location } = useLocation();
+  const { user, addReport } = useAuth();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
@@ -39,25 +62,24 @@ const Detection: React.FC = () => {
     }
   };
 
+  // This function is used for both upload and camera
   const analyzeImage = () => {
     setIsAnalyzing(true);
     setDetectionResult(null);
 
-    // Simulate AI analysis
     setTimeout(() => {
+      const violations = getRandomViolations();
+      const confidence = getRandomConfidence();
+      const isAuthorized = violations.length === 0;
       const mockResult: DetectionResult = {
-        violations: [
-          'Billboard size exceeds 40 sq ft limit',
-          'Missing QR code with permit details',
-          'Located within 100m of traffic junction'
-        ],
-        confidence: 72,
-        billboardSize: { width: 12, height: 8 },
-        isAuthorized: false
+        violations,
+        confidence,
+        billboardSize: { width: Math.floor(Math.random() * 20) + 5, height: Math.floor(Math.random() * 10) + 5 },
+        isAuthorized
       };
       setDetectionResult(mockResult);
       setIsAnalyzing(false);
-    }, 3000);
+    }, 2000);
   };
 
   // Capture current frame from CameraDetection
@@ -94,6 +116,7 @@ const Detection: React.FC = () => {
 
     // Simulate report submission
     alert('Report submitted successfully! You earned 10 points.');
+    addReport(10); // or any points logic you want
     setSelectedImage(null);
     setDetectionResult(null);
     setCapturedFrame(null);

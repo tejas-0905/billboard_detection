@@ -19,6 +19,17 @@ const Profile: React.FC = () => {
     { action: 'Earned achievement badge', location: '', points: 25, time: '3d ago' }
   ];
 
+  if (!user) {
+    return (
+      <div className="pt-32 pb-8 px-4">
+        <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow text-center">
+          <h2 className="text-xl font-bold mb-2">Profile</h2>
+          <p className="text-gray-500">You are not logged in.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pt-32 pb-8 px-4">
       <div className="max-w-md mx-auto">
@@ -33,25 +44,25 @@ const Profile: React.FC = () => {
               <User className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold">{user?.name || 'Demo User'}</h2>
+              <h2 className="text-xl font-bold">{user.name}</h2>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                {user?.email || 'demo@billboard.app'}
+                {user.email}
               </p>
               <p className="text-sm text-blue-500 font-medium capitalize">
-                {user?.role || 'Citizen'}
+                {user.role}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
-              <p className="text-2xl font-bold text-orange-500">{user?.points || 150}</p>
+              <p className="text-2xl font-bold text-orange-500">{user.points}</p>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Points Earned
               </p>
             </div>
             <div className="text-center">
-              <p className="text-2xl font-bold text-green-500">{user?.reportsSubmitted || 12}</p>
+              <p className="text-2xl font-bold text-green-500">{user.reportsSubmitted}</p>
               <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Reports Submitted
               </p>
