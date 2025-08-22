@@ -8,19 +8,24 @@ const AuthScreen: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true); // Start loading for both login and signup
     if (mode === "login") {
       const success = await login(email, password);
+      setLoading(false); // End loading
       if (!success) setError("You have not signed up");
     } else {
       if (!name) {
+        setLoading(false);
         setError("Name is required");
         return;
       }
       const success = await register(name, email, password);
+      setLoading(false); // End loading
       if (!success) setError("Registration failed (email already registered)");
     }
   };
@@ -86,6 +91,7 @@ const AuthScreen: React.FC = () => {
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-2 rounded-lg font-semibold shadow transition"
+            disabled={loading}
           >
             {mode === "login" ? "Sign In" : "Sign Up"}
           </button>
@@ -126,6 +132,14 @@ const AuthScreen: React.FC = () => {
       <div className="mt-8 text-white text-xs opacity-70 text-center">
         &copy; {new Date().getFullYear()} BillboardGuard. All rights reserved.
       </div>
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow flex flex-col items-center">
+            <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
+            <span className="text-lg font-semibold">Loading...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

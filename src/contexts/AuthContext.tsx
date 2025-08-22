@@ -5,7 +5,9 @@ import {
   doc,
   getDocs,
   setDoc,
-  getDoc
+  getDoc,
+  query,
+  where
 } from "firebase/firestore";
 
 interface User {
@@ -36,15 +38,15 @@ export const useAuth = () => {
   return context;
 };
 
+// 🔹 Save or update user in Firestore
+async function setStoredUser(user: User): Promise<void> {
+  await setDoc(doc(db, "users", user.id), user, { merge: true });
+}
+
 // 🔹 Fetch all users from Firestore
 async function getStoredUsers(): Promise<User[]> {
   const snap = await getDocs(collection(db, "users"));
   return snap.docs.map((d) => d.data() as User);
-}
-
-// 🔹 Save or update user in Firestore
-async function setStoredUser(user: User): Promise<void> {
-  await setDoc(doc(db, "users", user.id), user, { merge: true });
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -65,12 +67,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // 🔹 Login: check Firestore for matching email+password
   const login = async (email: string, password: string): Promise<boolean> => {
-    const users = await getStoredUsers();
-    const found = users.find(
-      (u) => u.email === email && u.password === password
-    );
-    if (found) {
-      const { password, ...userWithoutPassword } = found;
+    const q = query(collection(db, "users"), where("email", "==", email));
+    const snap = await getDocs(q);
+    if (snap.empty) return false;
+    const userDoc = snap.docs[0].data() as User;
+    if (userDoc.password === password) {
+      const { password, ...userWithoutPassword } = userDoc;
       setUser(userWithoutPassword);
       return true;
     }
@@ -113,16 +115,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // 🔹 Add report = increase points & reportsSubmitted in Firestore
   const addReport = async (points: number) => {
     if (!user) return;
-
-    const updated = {
-      ...user,
+    // Fetch the full user doc to get the password
+    const userDoc = await getDoc(doc(db, "users", user.id));
+    const userData = userDoc.data() as User;
+    const updated: User = {
+      ...userData,
       points: user.points + points,
       reportsSubmitted: user.reportsSubmitted + 1,
     };
-
-    await setStoredUser({ ...updated, password: "hidden" } as User); // keep structure
-
-    setUser(updated);
+    await setStoredUser(updated);
+    const { password, ...userWithoutPassword } = updated;
+    setUser(userWithoutPassword);
   };
 
   return (
