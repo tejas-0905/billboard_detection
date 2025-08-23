@@ -128,7 +128,8 @@ const Detection: React.FC = () => {
     }
   }, [cameraRef]);
 
-  const submitReport = () => {
+  const submitReport = async () => {
+    setReportLoading(true);
     const reportData = {
       image: selectedImage,
       location: location ? {
@@ -140,12 +141,15 @@ const Detection: React.FC = () => {
       confidence: detectionResult?.confidence
     };
 
-    // Simulate report submission
-    alert('Report submitted successfully! You earned 10 points.');
-    addReport(10); // or any points logic you want
+    await addReport(10);
+
     setSelectedImage(null);
     setDetectionResult(null);
     setCapturedFrame(null);
+
+    setReportSuccess(true);
+    setReportLoading(false);
+    setTimeout(() => setReportSuccess(false), 3000);
   };
 
   const [form, setForm] = useState<UserReport>({
@@ -163,6 +167,8 @@ const Detection: React.FC = () => {
   });
   const [formSuccess, setFormSuccess] = useState(false);
   const [reportSubmitted, setReportSubmitted] = useState(false); // New state to control access to upload/camera
+  const [reportSuccess, setReportSuccess] = useState(false);
+  const [reportLoading, setReportLoading] = useState(false);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -214,6 +220,31 @@ const Detection: React.FC = () => {
     <div className="pt-32 pb-8 px-4">
       <div className="max-w-md mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Billboard Detection</h2>
+
+        {/* Success message */}
+        {reportSuccess && (
+          <div className="mb-4 p-3 rounded-xl bg-green-100 text-green-800 font-medium text-center shadow">
+            ✅ Report submitted successfully! You earned 10 points.
+          </div>
+        )}
+
+        {/* Organized, modern loading overlay */}
+        {reportLoading && (
+          <div className="fixed inset-0 flex items-center justify-center z-50"
+            style={{
+              backgroundColor: theme === 'dark' ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.85)'
+            }}
+          >
+            <div className={`rounded-2xl shadow-2xl border px-8 py-8 flex flex-col items-center
+              ${theme === 'dark' ? 'bg-blue-700 border-blue-900' : 'bg-white border-blue-200'}`}>
+              <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-6"></div>
+              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>Submitting Report</h3>
+              <p className={`text-sm text-center mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                Your report is being processed.<br />Thank you for helping keep the city compliant!
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Report Form */}
         {!reportSubmitted && (

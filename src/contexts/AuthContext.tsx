@@ -115,13 +115,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // 🔹 Add report = increase points & reportsSubmitted in Firestore
   const addReport = async (points: number) => {
     if (!user) return;
-    // Fetch the full user doc to get the password
     const userDoc = await getDoc(doc(db, "users", user.id));
     const userData = userDoc.data() as User;
     const updated: User = {
       ...userData,
-      points: user.points + points,
-      reportsSubmitted: user.reportsSubmitted + 1,
+      points: userData.points + points, // Use Firestore value
+      reportsSubmitted: userData.reportsSubmitted + 1,
     };
     await setStoredUser(updated);
     const { password, ...userWithoutPassword } = updated;
