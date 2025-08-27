@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Camera, Upload, MapPin, Clock, AlertTriangle, CheckCircle, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLocation } from '../contexts/LocationContext';
@@ -130,16 +130,26 @@ const Detection: React.FC = () => {
 
   const submitReport = async () => {
     setReportLoading(true);
-    const reportData = {
-      image: selectedImage,
-      location: location ? {
-        lat: location.coords.latitude,
-        lng: location.coords.longitude
-      } : null,
-      timestamp: new Date().toISOString(),
-      violations: detectionResult?.violations,
-      confidence: detectionResult?.confidence
+
+    // Build the report object with all required fields
+    const report: UserReport = {
+      id: Date.now().toString(),
+      location: humanAddress, // Use the human-readable address
+      timestamp: new Date().toLocaleString(),
+      status: "pending",
+      priority: "medium",
+      violations: detectionResult?.violations || [],
+      reporter: user?.name || "You",
+      reporterEmail: user?.email || "",
+      reporterPhone: "",
+      description: detectionResult?.violations?.join(", ") || "",
+      photo: selectedImage,
     };
+
+    // Save to localStorage for dashboard
+    const reports: UserReport[] = JSON.parse(localStorage.getItem("user-reports") || "[]");
+    reports.unshift(report);
+    localStorage.setItem("user-reports", JSON.stringify(reports));
 
     await addReport(10);
 
@@ -169,6 +179,24 @@ const Detection: React.FC = () => {
   const [reportSubmitted, setReportSubmitted] = useState(false); // New state to control access to upload/camera
   const [reportSuccess, setReportSuccess] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
+  const [humanAddress, setHumanAddress] = useState<string>("Fetching address...");
+
+  useEffect(() => {
+    if (location && location.coords) {
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${location.coords.latitude}&lon=${location.coords.longitude}&format=json`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.display_name) {
+            setHumanAddress(data.display_name);
+          } else {
+            setHumanAddress("Address unavailable");
+          }
+        })
+        .catch(() => setHumanAddress("Address unavailable"));
+    } else {
+      setHumanAddress("Location unavailable");
+    }
+  }, [location]);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -230,338 +258,233 @@ const Detection: React.FC = () => {
 
         {/* Organized, modern loading overlay */}
         {reportLoading && (
-          <div className="fixed inset-0 flex items-center justify-center z-50"
+          <div
+            className="fixed inset-0 flex items-center justify-center z-50"
             style={{
-              backgroundColor: theme === 'dark' ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.85)'
+              background: theme === 'dark'
+                ? 'linear-gradient(135deg, #1e293b 60%, #334155 100%)'
+                : 'linear-gradient(135deg, #e0e7ff 60%, #f1f5f9 100%)',
+              opacity: 0.98
             }}
           >
             <div className={`rounded-2xl shadow-2xl border px-8 py-8 flex flex-col items-center
-              ${theme === 'dark' ? 'bg-blue-700 border-blue-900' : 'bg-white border-blue-200'}`}>
-              <div className="animate-spin w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mb-6"></div>
-              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>Submitting Report</h3>
+              ${theme === 'dark' ? 'bg-gray-900 border-blue-900' : 'bg-white border-blue-200'}`}>
+              <div className="relative mb-6">
+                <div className={`animate-spin w-14 h-14 border-4 rounded-full
+                  ${theme === 'dark'
+                    ? 'border-blue-500 border-t-transparent'
+                    : 'border-blue-400 border-t-transparent'}`}></div>
+                <span className={`absolute inset-0 flex items-center justify-center text-2xl font-bold
+                  ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>
+                  🚦
+                </span>
+              </div>
+              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-blue-200' : 'text-blue-700'}`}>
+                Submitting Your Report
+              </h3>
               <p className={`text-sm text-center mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                Your report is being processed.<br />Thank you for helping keep the city compliant!
+                Your report is being processed.<br />
+                Thank you for helping keep the city compliant!
               </p>
+              <div className={`mt-4 text-xs ${theme === 'dark' ? 'text-blue-400' : 'text-blue-500'}`}>
+                Please wait a moment...
+              </div>
             </div>
           </div>
         )}
 
-        {/* Report Form */}
-        {!reportSubmitted && (
-          <form
-            onSubmit={handleFormSubmit}
-            className={`rounded-xl shadow p-6 mb-8 max-w-2xl mx-auto transition-colors ${
-              theme === 'dark'
-                ? 'bg-gray-800/90 border border-gray-700'
-                : 'bg-white border border-gray-200'
+        {/* Mode Switch */}
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setMode('upload')}
+            className={`px-4 py-2 rounded-l-xl font-semibold border transition-colors ${
+              mode === 'upload'
+                ? 'bg-blue-500 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 border-gray-700'
+                  : 'bg-gray-100 text-gray-700 border-gray-300'
             }`}
           >
-            <h2 className="text-xl font-bold mb-1">Report Unauthorized Billboard</h2>
-            <p className={`mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-              Help us maintain urban compliance by reporting unauthorized or problematic billboards in your area.
-            </p>
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2 flex items-center gap-2">Your Information</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Full Name <span className="text-red-500">*</span></label>
-                  <input
-                    className={`w-full border rounded px-3 py-2 transition-colors ${
-                      theme === 'dark'
-                        ? 'bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-400'
-                        : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
-                    }`}
-                    name="reporter"
-                    value={form.reporter}
-                    onChange={handleFormChange}
-                    required
-                    placeholder="Enter your name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Phone Number</label>
-                  <input
-                    className={`w-full border rounded px-3 py-2 transition-colors ${
-                      theme === 'dark'
-                        ? 'bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-400'
-                        : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
-                    }`}
-                    name="reporterPhone"
-                    value={form.reporterPhone}
-                    onChange={handleFormChange}
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-              </div>
-              <label className="block text-sm font-medium mb-1">Email Address <span className="text-red-500">*</span></label>
-              <input
-                className={`w-full border rounded px-3 py-2 mb-2 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-400'
-                    : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
-                }`}
-                name="reporterEmail"
-                value={form.reporterEmail}
-                onChange={handleFormChange}
-                required
-                placeholder="your.email@example.com"
-              />
-            </div>
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2 flex items-center gap-2">Billboard Location</h3>
-              <label className="block text-sm font-medium mb-1">Address or Location Description <span className="text-red-500">*</span></label>
-              <input
-                className={`w-full border rounded px-3 py-2 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-400'
-                    : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
-                }`}
-                name="location"
-                value={form.location}
-                onChange={handleFormChange}
-                required
-                placeholder="123 Main St, City, State or describe the location"
-              />
-            </div>
-            <div className="mb-4">
-              <h3 className="font-semibold mb-2 flex items-center gap-2">Report Details</h3>
-              <label className="block text-sm font-medium mb-1">Priority Level</label>
-              <select
-                className={`w-full border rounded px-3 py-2 mb-2 transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-gray-900 border-gray-700 text-gray-100'
-                    : 'bg-gray-50 border-gray-300 text-gray-800'
-                }`}
-                name="priority"
-                value={form.priority}
-                onChange={handleFormChange}
-              >
-                {priorities.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-              </select>
-              <label className="block text-sm font-medium mb-1">Description of Issue <span className="text-red-500">*</span></label>
-              <textarea
-                className={`w-full border rounded px-3 py-2 mb-2 transition-colors min-h-[40px] ${
-                  theme === 'dark'
-                    ? 'bg-gray-900 border-gray-700 text-gray-100 placeholder-gray-400'
-                    : 'bg-gray-50 border-gray-300 text-gray-800 placeholder-gray-400'
-                }`}
-                name="description"
-                value={form.description}
-                onChange={handleFormChange}
-                required
-                placeholder="Please describe the billboard issue in detail..."
-              />
-            </div>
+            Upload
+          </button>
+          <button
+            onClick={() => setMode('live')}
+            className={`px-4 py-2 rounded-r-xl font-semibold border transition-colors ${
+              mode === 'live'
+                ? 'bg-blue-500 text-white'
+                : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-300 border-gray-700'
+                  : 'bg-gray-100 text-gray-700 border-gray-300'
+            }`}
+          >
+            Live Camera
+          </button>
+        </div>
+
+        {/* Upload Mode */}
+        {mode === 'upload' && !selectedImage && (
+          <div className="space-y-4">
             <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700"
+              onClick={() => fileInputRef.current?.click()}
+              className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 border-2 border-dashed transition-colors ${
+                theme === 'dark'
+                  ? 'border-gray-600 hover:border-gray-500 text-gray-300'
+                  : 'border-gray-300 hover:border-gray-400 text-gray-600'
+              }`}
             >
-              Submit Report
+              <Upload className="w-6 h-6" />
+              <span>Upload Image</span>
             </button>
-            {formSuccess && <div className="text-green-600 mt-2">Report submitted!</div>}
-          </form>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+          </div>
         )}
 
-        {/* Show upload/camera only after report is submitted */}
-        {reportSubmitted && (
-          <>
-            {/* Mode Switch */}
-            <div className="flex justify-center mb-6">
-              <button
-                onClick={() => setMode('upload')}
-                className={`px-4 py-2 rounded-l-xl font-semibold border transition-colors ${
-                  mode === 'upload'
-                    ? 'bg-blue-500 text-white'
-                    : theme === 'dark'
-                      ? 'bg-gray-800 text-gray-300 border-gray-700'
-                      : 'bg-gray-100 text-gray-700 border-gray-300'
-                }`}
-              >
-                Upload
-              </button>
-              <button
-                onClick={() => setMode('live')}
-                className={`px-4 py-2 rounded-r-xl font-semibold border transition-colors ${
-                  mode === 'live'
-                    ? 'bg-blue-500 text-white'
-                    : theme === 'dark'
-                      ? 'bg-gray-800 text-gray-300 border-gray-700'
-                      : 'bg-gray-100 text-gray-700 border-gray-300'
-                }`}
-              >
-                Live Camera
-              </button>
+        {/* Live Camera Mode */}
+        {mode === 'live' && (
+          <div className="space-y-4">
+            <div className="relative rounded-xl overflow-hidden">
+              <CameraDetection ref={cameraRef} />
+              <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none" />
             </div>
-
-            {/* Upload Mode */}
-            {mode === 'upload' && !selectedImage && (
-              <div className="space-y-4">
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 border-2 border-dashed transition-colors ${
-                    theme === 'dark'
-                      ? 'border-gray-600 hover:border-gray-500 text-gray-300'
-                      : 'border-gray-300 hover:border-gray-400 text-gray-600'
-                  }`}
-                >
-                  <Upload className="w-6 h-6" />
-                  <span>Upload Image</span>
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                  className="hidden"
+            <button
+              onClick={handleCaptureFrame}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-colors"
+            >
+              <Camera className="w-6 h-6" />
+              <span>Capture & Analyze</span>
+            </button>
+            {capturedFrame && (
+              <div className="mt-4">
+                <img
+                  src={capturedFrame}
+                  alt="Captured frame"
+                  className="w-full h-64 object-cover rounded-xl"
                 />
               </div>
             )}
+          </div>
+        )}
 
-            {/* Live Camera Mode */}
-            {mode === 'live' && (
-              <div className="space-y-4">
-                <div className="relative rounded-xl overflow-hidden">
-                  <CameraDetection ref={cameraRef} />
-                  <div className="absolute inset-0 flex items-end justify-center pb-4 pointer-events-none" />
-                </div>
+        {/* Show selected image and analysis */}
+        {selectedImage && (
+          <div className="space-y-4">
+            <div className="relative">
+              <img
+                src={selectedImage}
+                alt="Captured billboard"
+                className="w-full h-64 object-cover rounded-xl"
+              />
+              {!isAnalyzing && !detectionResult && (
                 <button
-                  onClick={handleCaptureFrame}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-semibold flex items-center justify-center space-x-2 transition-colors"
+                  onClick={() => {
+                    setSelectedImage(null);
+                    setCapturedFrame(null);
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
                 >
-                  <Camera className="w-6 h-6" />
-                  <span>Capture & Analyze</span>
+                  <X className="w-4 h-4" />
                 </button>
-                {capturedFrame && (
-                  <div className="mt-4">
-                    <img
-                      src={capturedFrame}
-                      alt="Captured frame"
-                      className="w-full h-64 object-cover rounded-xl"
-                    />
-                  </div>
-                )}
+              )}
+            </div>
+
+            {isAnalyzing && (
+              <div className={`p-6 rounded-xl backdrop-blur-sm border ${
+                theme === 'dark' 
+                  ? 'bg-gray-800/50 border-gray-700' 
+                  : 'bg-white/50 border-gray-200'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                  <span>Analyzing billboard for violations...</span>
+                </div>
               </div>
             )}
 
-            {/* Show selected image and analysis */}
-            {selectedImage && (
-              <div className="space-y-4">
-                <div className="relative">
-                  <img
-                    src={selectedImage}
-                    alt="Captured billboard"
-                    className="w-full h-64 object-cover rounded-xl"
-                  />
-                  {!isAnalyzing && !detectionResult && (
-                    <button
-                      onClick={() => {
-                        setSelectedImage(null);
-                        setCapturedFrame(null);
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  )}
+            {detectionResult && (
+              <div className={`p-6 rounded-xl backdrop-blur-sm border ${
+                theme === 'dark' 
+                  ? 'bg-gray-800/50 border-gray-700' 
+                  : 'bg-white/50 border-gray-200'
+              }`}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-lg">Analysis Results</h3>
+                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    detectionResult.isAuthorized
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {detectionResult.isAuthorized ? 'Authorized' : 'Unauthorized'}
+                  </div>
                 </div>
 
-                {isAnalyzing && (
-                  <div className={`p-6 rounded-xl backdrop-blur-sm border ${
-                    theme === 'dark' 
-                      ? 'bg-gray-800/50 border-gray-700' 
-                      : 'bg-white/50 border-gray-200'
-                  }`}>
-                    <div className="flex items-center space-x-3">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                      <span>Analyzing billboard for violations...</span>
-                    </div>
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm">
+                      {humanAddress}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">{new Date().toLocaleString()}</span>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm">Confidence: {detectionResult.confidence}%</span>
+                  </div>
+                </div>
+
+                {detectionResult.violations.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2 flex items-center space-x-2">
+                      <AlertTriangle className="w-4 h-4 text-red-500" />
+                      <span>Violations Detected:</span>
+                    </h4>
+                    <ul className="space-y-1">
+                      {detectionResult.violations.map((violation, index) => (
+                        <li key={index} className={`text-sm ${
+                          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                        }`}>
+                          • {violation}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
 
-                {detectionResult && (
-                  <div className={`p-6 rounded-xl backdrop-blur-sm border ${
-                    theme === 'dark' 
-                      ? 'bg-gray-800/50 border-gray-700' 
-                      : 'bg-white/50 border-gray-200'
-                  }`}>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-lg">Analysis Results</h3>
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        detectionResult.isAuthorized
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {detectionResult.isAuthorized ? 'Authorized' : 'Unauthorized'}
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="w-4 h-4 text-blue-500" />
-                        <span className="text-sm">
-                          {location ? 
-                            `${location.coords.latitude.toFixed(6)}, ${location.coords.longitude.toFixed(6)}` : 
-                            'Location unavailable'
-                          }
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <Clock className="w-4 h-4 text-green-500" />
-                        <span className="text-sm">{new Date().toLocaleString()}</span>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <CheckCircle className="w-4 h-4 text-purple-500" />
-                        <span className="text-sm">Confidence: {detectionResult.confidence}%</span>
-                      </div>
-                    </div>
-
-                    {detectionResult.violations.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="font-medium mb-2 flex items-center space-x-2">
-                          <AlertTriangle className="w-4 h-4 text-red-500" />
-                          <span>Violations Detected:</span>
-                        </h4>
-                        <ul className="space-y-1">
-                          {detectionResult.violations.map((violation, index) => (
-                            <li key={index} className={`text-sm ${
-                              theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                            }`}>
-                              • {violation}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={submitReport}
-                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition-colors"
-                      >
-                        Submit Report
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedImage(null);
-                          setDetectionResult(null);
-                          setCapturedFrame(null);
-                        }}
-                        className={`px-6 py-3 rounded-xl font-semibold border transition-colors ${
-                          theme === 'dark'
-                            ? 'border-gray-600 text-gray-300 hover:bg-gray-800'
-                            : 'border-gray-300 text-gray-600 hover:bg-gray-50'
-                        }`}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <div className="flex space-x-3">
+                  <button
+                    onClick={submitReport}
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-semibold transition-colors"
+                  >
+                    Submit Report
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedImage(null);
+                      setDetectionResult(null);
+                      setCapturedFrame(null);
+                    }}
+                    className={`px-6 py-3 rounded-xl font-semibold border transition-colors ${
+                      theme === 'dark'
+                        ? 'border-gray-600 text-gray-300 hover:bg-gray-800'
+                        : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

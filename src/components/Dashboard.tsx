@@ -101,8 +101,8 @@ const Dashboard: React.FC = () => {
 
   // On mount, load reports from localStorage and merge with static
   useEffect(() => {
-    const userReports = getUserReports();
-    setReports([...userReports, ...initialReports]);
+    const storedReports = JSON.parse(localStorage.getItem("user-reports") || "[]");
+    setReports(storedReports);
   }, []);
 
   // When a new report is submitted, add to state and localStorage
