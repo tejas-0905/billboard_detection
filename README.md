@@ -1,4 +1,4 @@
-<img width="1000" height="479" alt="image" src="https://github.com/user-attachments/assets/4a1468a8-ab57-4cee-a8af-8e6ecec97e57" /># 🏙️ Billboard Detection System  
+# 🏙️ Billboard Detection System  
 
 A **smart, scalable, mobility-based detection application** that identifies unauthorized or non-compliant billboards by analyzing captured images or live video.  
 This project integrates **real-time image detection, citizen engagement, and regulatory compliance checks** to streamline the process of identifying illegal billboards.
