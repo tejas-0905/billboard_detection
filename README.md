@@ -1,2 +1,46 @@
-billboard detection
-https://unauthorisedbb.netlify.app/
+<img width="1000" height="479" alt="image" src="https://github.com/user-attachments/assets/4a1468a8-ab57-4cee-a8af-8e6ecec97e57" /># 🏙️ Billboard Detection System  
+
+A **smart, scalable, mobility-based detection application** that identifies unauthorized or non-compliant billboards by analyzing captured images or live video.  
+This project integrates **real-time image detection, citizen engagement, and regulatory compliance checks** to streamline the process of identifying illegal billboards.
+
+---
+
+## 🚀 Features  
+
+- 📸 **Image & Video Input** – Capture from camera or upload existing image/video.  
+- 🤖 **AI-Powered Detection** – Detect unauthorized billboards using trained models.  
+- 📊 **Real-Time Results** – Get instant feedback with detection highlights.  
+- 🌐 **User-Friendly Interface** – Modern, responsive web app UI.  
+- 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
+- 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.  
+
+---
+
+## 🛠️ Tech Stack  
+
+| **Category**         | **Technology Used** |
+|----------------------|-------------------|
+| **Frontend**         | HTML, CSS, JavaScript |
+| **Backend**          | Flask / Node.js (Mention your choice) |
+| **AI/ML**            | OpenCV, TensorFlow / YOLO (mention the exact model) |
+| **Database**         | Firebase |
+| **Hosting**          | Netlify / Vercel (mention if used) |
+
+---
+
+## 🧑‍💻 Installation  
+
+Follow these steps to run locally:  
+
+```bash
+# Clone the repository
+git clone https://github.com/tejas-0905/billboard_detection.git
+
+# Go to project directory
+cd billboard_detection
+
+# Install dependencies
+pip install -r requirements.txt  # (or npm install if using JS backend)
+
+# Run the app
+python app.py  # or npm start
