@@ -44,3 +44,17 @@ pip install -r requirements.txt  # (or npm install if using JS backend)
 
 # Run the app
 python app.py  # or npm start
+```
+## Project Structure
+billboard_detection/
+│
+├── frontend/           # UI Files (HTML, CSS, JS)
+├── backend/            # Flask / Node server
+├── models/             # Trained AI/ML model files
+├── static/             # Images, styles, JS assets
+├── app.py              # Main entry point (Flask)
+├── requirements.txt    # Python dependencies
+└── README.md           # This file
+
+
+
