@@ -45,7 +45,11 @@ pip install -r requirements.txt  # (or npm install if using JS backend)
 # Run the app
 python app.py  # or npm start
 ```
+
+
 ## Project Structure
+
+```bash
 billboard_detection/
 │
 ├── frontend/           # UI Files (HTML, CSS, JS)
@@ -56,5 +60,5 @@ billboard_detection/
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
 
-
+``` 
 
