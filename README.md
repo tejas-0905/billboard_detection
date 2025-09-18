@@ -65,5 +65,5 @@ npm start        # Node.js├── app.py              # Main entry point (Flas
 ``` 
 ## 🔮 Future Scope
 
-📡 IoT Integration – Real-time detection from surveillance cameras.
-📈 Analytics Dashboard – Insights for authorities on violation hotspots.
+- 📡 **IoT Integration** – Real-time detection from surveillance cameras.
+- 📈 **Analytics Dashboard** – Insights for authorities on violation hotspots.
