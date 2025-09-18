@@ -64,3 +64,4 @@ billboard_detection/
 ## 🔮 Future Scope
 
 📡 IoT Integration – Real-time detection from surveillance cameras.
+📈 Analytics Dashboard – Insights for authorities on violation hotspots.
