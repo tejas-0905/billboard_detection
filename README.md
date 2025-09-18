@@ -13,50 +13,52 @@ This project integrates **real-time image detection, citizen engagement, and reg
 - 🌐 **User-Friendly Interface** – Modern, responsive web app UI.  
 - 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
 - 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.  
+- 🗺️ **Geo-Tagging Support** – Each report is linked with location for verification.  
 
 ---
 
 ## 🛠️ Tech Stack  
 
 | **Category**         | **Technology Used** |
-|----------------------|-------------------|
+|----------------------|----------------------|
 | **Frontend**         | HTML, CSS, JavaScript |
-| **Backend**          | Flask / Node.js (Mention your choice) |
-| **AI/ML**            | OpenCV, TensorFlow / YOLO (mention the exact model) |
-| **Database**         | Firebase |
-| **Hosting**          | Netlify / Vercel (mention if used) |
+| **Backend**          | Flask / Node.js |
+| **AI/ML**            | OpenCV, TensorFlow / YOLOv5 |
+| **Database**         | Firebase (Realtime DB / Firestore) |
+| **Hosting**          | Netlify (frontend), Heroku/Render (backend) |
+
+---
+
+## ⚙️ Workflow  
+
+1. **User uploads** an image/video or captures via camera.  
+2. **AI model processes** the input using YOLO/TensorFlow and highlights billboard regions.  
+3. **System checks compliance** (registered vs. unauthorized).  
+4. **Firebase logs report** with user profile & geo-coordinates.  
+5. **Authorities dashboard** (future scope) can verify and take action.  
 
 ---
 
 ## 🧑‍💻 Installation  
 
-Follow these steps to run locally:  
+Run locally with these steps:  
 
 ```bash
 # Clone the repository
 git clone https://github.com/tejas-0905/billboard_detection.git
 
-# Go to project directory
+# Navigate to project directory
 cd billboard_detection
 
 # Install dependencies
-pip install -r requirements.txt  # (or npm install if using JS backend)
+pip install -r requirements.txt   # For Python backend
+# or
+npm install                       # For Node backend
 
 # Run the app
-python app.py  # or npm start
-```
-
-
-## Project Structure
-
-```bash
-billboard_detection/
-│
-├── frontend/           # UI Files (HTML, CSS, JS)
-├── backend/            # Flask / Node server
-├── models/             # Trained AI/ML model files
-├── static/             # Images, styles, JS assets
-├── app.py              # Main entry point (Flask)
+python app.py    # Flask
+# or
+npm start        # Node.js├── app.py              # Main entry point (Flask)
 ├── requirements.txt    # Python dependencies
 └── README.md           # This file
 
