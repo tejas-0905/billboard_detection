@@ -68,3 +68,4 @@ npm start        # Node.js├── app.py              # Main entry point (Flas
 - 📡 **IoT Integration** – Real-time detection from surveillance cameras.
 - 📈 **Analytics Dashboard** – Insights for authorities on violation hotspots.
 - 🏙️ **Smart City Integration** – Connect with municipal APIs for automated action.
+- 🔐 **User Authentication** – Secure login and leaderboard for citizen engagement.
