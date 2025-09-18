@@ -61,4 +61,6 @@ billboard_detection/
 └── README.md           # This file
 
 ``` 
+## 🔮 Future Scope
 
+📡 IoT Integration – Real-time detection from surveillance cameras.
