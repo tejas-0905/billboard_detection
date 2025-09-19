@@ -92,3 +92,7 @@ Deploy via Netlify or run locally by opening `index.html`.
 3. Commit your changes and push.
 4. Open a Pull Request 🚀
 
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Tech](https://img.shields.io/badge/tech-Flask%20|%20YOLOv5-blue)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
