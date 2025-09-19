@@ -72,3 +72,11 @@ Our solution allows citizens and authorities to:
 ```bash
 git clone https://github.com/tejas-0905/billboard_detection.git
 cd billboard_detection
+```
+### Backend (Flask)
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+
