@@ -87,3 +87,14 @@ npm start
 ### Frontend
 Deploy via Netlify or run locally by opening `index.html`.
 
+##  Acknowledgments  
+
+Special thanks to the tools, frameworks, and contributors that made this project possible:  
+
+- **[YOLOv5](https://github.com/ultralytics/yolov5)** – For providing state-of-the-art object detection models.  
+- **[OpenCV](https://opencv.org/)** – For enabling fast and efficient image processing.  
+- **[Firebase](https://firebase.google.com/)** – For real-time database and user authentication support.  
+- **Netlify & Heroku** – For seamless cloud hosting and deployment.  
+- **Open-Source Community** – For valuable resources, tutorials, and datasets.  
+- **Contributors & Testers** – For helping improve the system with feedback and bug reports.  
+
