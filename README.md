@@ -66,15 +66,6 @@ Our solution allows citizens and authorities to:
 
 ---
 
-## 📸 Screenshots / Demo  
-
-> *(Replace these with actual screenshots or a GIF of your project in action)*  
-
-![Demo Screenshot](assets/demo.png)  
-![Real-Time Detection](assets/realtime.gif)  
-
----
-
 ## 🧑‍💻 Installation  
 
 ### 1️⃣ Clone the Repository
