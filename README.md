@@ -75,4 +75,8 @@ npm start        # Node.js├── app.py              # Main entry point (Flas
 ```bash
 pip install -r requirements.txt
 python app.py
+### Backend (Node.js)
+```bash
+npm install
+npm start
 
