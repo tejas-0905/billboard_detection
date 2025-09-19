@@ -69,3 +69,10 @@ npm start        # Node.js├── app.py              # Main entry point (Flas
 - 📈 **Analytics Dashboard** – Insights for authorities on violation hotspots.
 - 🏙️ **Smart City Integration** – Connect with municipal APIs for automated action.
 - 🔐 **User Authentication** – Secure login and leaderboard for citizen engagement.
+
+
+### Backend (Flask)
+```bash
+pip install -r requirements.txt
+python app.py
+
