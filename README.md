@@ -84,4 +84,6 @@ npm install
 npm start
 ```
 
+### Frontend
+Deploy via Netlify or run locally by opening `index.html`.
 
