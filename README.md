@@ -1,14 +1,41 @@
 # 🏙️ Billboard Detection System  
 
+![Status](https://img.shields.io/badge/status-active-brightgreen)
+![Tech](https://img.shields.io/badge/tech-Flask%20|%20YOLOv5%20|%20Firebase-blue)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
+
 A **smart, scalable, mobility-based detection application** that identifies unauthorized or non-compliant billboards by analyzing captured images or live video.  
 This project integrates **real-time image detection, citizen engagement, and regulatory compliance checks** to streamline the process of identifying illegal billboards.
+
+---
+
+## 📑 Table of Contents  
+- [Overview](#-overview)  
+- [Features](#-features)  
+- [Tech Stack](#-tech-stack)  
+- [Workflow](#-workflow)  
+- [Screenshots / Demo](#-screenshots--demo)  
+- [Installation](#-installation)  
+- [Future Scope](#-future-scope)  
+- [Contributing](#-contributing)  
+- [License](#-license)  
+- [Acknowledgments](#-acknowledgments)
+
+---
+
+## 🔎 Overview  
+Illegal and non-compliant billboards clutter cities, cause safety issues, and violate regulations.  
+Our solution allows citizens and authorities to:  
+- Detect unauthorized billboards in **real-time**.  
+- Report them with **geo-tagged evidence**.  
+- Track and analyze **violation hotspots** for better urban planning.  
 
 ---
 
 ## 🚀 Features  
 
 - 📸 **Image & Video Input** – Capture from camera or upload existing image/video.  
-- 🤖 **AI-Powered Detection** – Detect unauthorized billboards using trained models.  
+- 🤖 **AI-Powered Detection** – Detect unauthorized billboards using trained YOLO/TensorFlow models.  
 - 📊 **Real-Time Results** – Get instant feedback with detection highlights.  
 - 🌐 **User-Friendly Interface** – Modern, responsive web app UI.  
 - 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
@@ -19,17 +46,13 @@ This project integrates **real-time image detection, citizen engagement, and reg
 
 ## 🛠️ Tech Stack  
 
-| **Category**         | **Technology Used** |
-|----------------------|----------------------|
-| **Frontend**         | HTML, CSS, JavaScript |
-| **Backend**          | Flask / Node.js |
-| **AI/ML**            | OpenCV, TensorFlow / YOLOv5 |
-| **Database**         | Firebase (Realtime DB / Firestore) |
-| **Hosting**          | Netlify (frontend), Heroku/Render (backend) |
-
-![Status](https://img.shields.io/badge/status-active-brightgreen)
-![Tech](https://img.shields.io/badge/tech-Flask%20|%20YOLOv5-blue)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
+| **Category**     | **Technology Used** |
+|------------------|--------------------|
+| **Frontend**     | HTML, CSS, JavaScript |
+| **Backend**      | Flask / Node.js |
+| **AI/ML**        | OpenCV, TensorFlow / YOLOv5 |
+| **Database**     | Firebase (Realtime DB / Firestore) |
+| **Hosting**      | Netlify (frontend), Heroku/Render (backend) |
 
 ---
 
@@ -43,59 +66,18 @@ This project integrates **real-time image detection, citizen engagement, and reg
 
 ---
 
+## 📸 Screenshots / Demo  
+
+> *(Replace these with actual screenshots or a GIF of your project in action)*  
+
+![Demo Screenshot](assets/demo.png)  
+![Real-Time Detection](assets/realtime.gif)  
+
+---
+
 ## 🧑‍💻 Installation  
 
-Run locally with these steps:  
-
+### 1️⃣ Clone the Repository
 ```bash
-# Clone the repository
 git clone https://github.com/tejas-0905/billboard_detection.git
-
-# Navigate to project directory
 cd billboard_detection
-
-# Install dependencies
-pip install -r requirements.txt   # For Python backend
-# or
-npm install                       # For Node backend
-
-# Run the app
-python app.py    # Flask
-# or
-npm start        # Node.js├── app.py              # Main entry point (Flask)
-├── requirements.txt    # Python dependencies
-└── README.md           # This file
-
-``` 
-## 🔮 Future Scope
-
-- 📡 **IoT Integration** – Real-time detection from surveillance cameras.
-- 📈 **Analytics Dashboard** – Insights for authorities on violation hotspots.
-- 🏙️ **Smart City Integration** – Connect with municipal APIs for automated action.
-- 🔐 **User Authentication** – Secure login and leaderboard for citizen engagement.
-
-
-### Backend (Flask)
-```bash
-pip install -r requirements.txt
-python app.py
-``` 
-### Backend (Node.js)
-
-```bash
-npm install
-npm start
-```
-
-### Frontend
-Deploy via Netlify or run locally by opening `index.html`.
-
-## 🤝 Contributing
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature-name`.
-3. Commit your changes and push.
-4. Open a Pull Request 🚀
-
-## 📜 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
