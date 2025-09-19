@@ -78,5 +78,10 @@ cd billboard_detection
 pip install -r requirements.txt
 python app.py
 ```
+### Backend (Node.js)
+```bash
+npm install
+npm start
+```
 
 
