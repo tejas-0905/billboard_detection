@@ -87,7 +87,6 @@ npm start
 Deploy via Netlify or run locally by opening `index.html`.
 
 ##  Acknowledgments  
-
 Special thanks to the tools, frameworks, and contributors that made this project possible:  
 
 - **[YOLOv5](https://github.com/ultralytics/yolov5)** – For providing state-of-the-art object detection models.  
