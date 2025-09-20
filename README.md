@@ -6,7 +6,6 @@
 
 A **smart, scalable, mobility-based detection application** that identifies unauthorized or non-compliant billboards by analyzing captured images or live video.  
 This project integrates **real-time image detection, citizen engagement, and regulatory compliance checks** to streamline the process of identifying illegal billboards.
-
 ---
 
 ## 📑 Table of Contents  
