@@ -75,7 +75,7 @@ cd billboard_detection
 ### Backend (Flask)
 ```bash
 pip install -r requirements.txt
-python 
+python app.py
 ```
 ### Backend (Node.js)
 ```bash
