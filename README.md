@@ -2,7 +2,6 @@
 
 ![Status](https://img.shields.io/badge/status-active-brightgreen)
 ![Tech](https://img.shields.io/badge/tech-Flask%20|%20YOLOv5%20|%20Firebase-blue)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 A **smart, scalable, mobility-based detection application** that identifies unauthorized or non-compliant billboards by analyzing captured images or live video.  
 This project integrates **real-time image detection, citizen engagement, and regulatory compliance checks** to streamline the process of identifying illegal billboards.
