@@ -22,7 +22,6 @@ Our solution allows citizens and authorities to:
 - 📸 **Image & Video Input** – Capture from camera or upload existing image/video.  
 - 🤖 **AI-Powered Detection** – Detect unauthorized billboards using trained YOLO/TensorFlow models.  
 - 📊 **Real-Time Results** – Get instant feedback with detection highlights.  
-- 🌐 **User-Friendly Interface** – Modern, responsive web app UI.  
 - 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
 - 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.  
 - 🗺️ **Geo-Tagging Support** – Each report is linked with location for verification.  
