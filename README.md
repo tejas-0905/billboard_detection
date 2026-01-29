@@ -24,7 +24,7 @@ Our solution allows citizens and authorities to:
 - 📊 **Real-Time Results** – Get instant feedback with detection highlights.  
 - 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
 - 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.  
-- 🗺️ **Geo-Tagging Support** – Each report is linked with location for verification.  
+
 
 ---
 
