@@ -16,6 +16,8 @@ Our solution allows citizens and authorities to:
 - Track and analyze **violation hotspots** for better urban planning.
 - The system bridges citizens and authorities through smart automation.
 - It minimizes manual inspection and speeds up enforcement.
+- It helps build cleaner and safer cities.
+
 
 
 
