@@ -15,6 +15,8 @@ Our solution allows citizens and authorities to:
 - Report them with **geo-tagged evidence**.  
 - Track and analyze **violation hotspots** for better urban planning.
 - The system bridges citizens and authorities through smart automation.
+- It minimizes manual inspection and speeds up enforcement.
+
 
 
 ---
