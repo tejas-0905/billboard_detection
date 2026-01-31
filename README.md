@@ -18,9 +18,6 @@ Our solution allows citizens and authorities to:
 - It minimizes manual inspection and speeds up enforcement.
 - It helps build cleaner and safer cities.
 
-
-
-
 ---
 
 ## 🚀 Features  
@@ -29,7 +26,8 @@ Our solution allows citizens and authorities to:
 - 🤖 **AI-Powered Detection** – Detect unauthorized billboards using trained YOLO/TensorFlow models.  
 - 📊 **Real-Time Results** – Get instant feedback with detection highlights.  
 - 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
-- 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.  
+- 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.
+- 🗺️ Geo-Tagging Support – Automatically attach location coordinates to each report.
 
 
 ---
