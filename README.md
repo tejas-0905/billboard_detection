@@ -28,6 +28,7 @@ Our solution allows citizens and authorities to:
 - 🔗 **Firebase Integration** – Stores user submissions and updates points in profile.  
 - 📢 **Citizen Engagement** – Users can report violations and contribute to cleaner cities.
 - 🗺️ Geo-Tagging Support – Automatically attach location coordinates to each report.
+- 🕒 Violation History – View previously reported billboards and their status.
 
 
 ---
