@@ -13,7 +13,9 @@ Illegal and non-compliant billboards clutter cities, cause safety issues, and vi
 Our solution allows citizens and authorities to:  
 - Detect unauthorized billboards in **real-time**.  
 - Report them with **geo-tagged evidence**.  
-- Track and analyze **violation hotspots** for better urban planning.  
+- Track and analyze **violation hotspots** for better urban planning.
+- The system bridges citizens and authorities through smart automation.
+
 
 ---
 
